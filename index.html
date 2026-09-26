@@ -518,7 +518,9 @@
         <div class="card" style="padding:44px;height:fit-content;">
           <h3 style="font-size:22px;margin-bottom:8px;">Schreiben Sie uns</h3>
           <p style="font-size:14px;color:var(--ink-soft);margin-bottom:28px;">Ob Frage, Bestellung oder Anfrage für Ihre Feier &ndash; wir melden uns schnellstmöglich zurück.</p>
-          <form id="contactForm" style="display:flex;flex-direction:column;gap:20px;">
+          <form id="contactForm" name="kontakt" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" style="display:flex;flex-direction:column;gap:20px;">
+            <input type="hidden" name="form-name" value="kontakt">
+            <p style="display:none;"><label>Nicht ausfüllen: <input name="bot-field"></label></p>
             <div class="field"><label>Name</label><input type="text" name="name" placeholder="Ihr Name" required></div>
             <div class="field"><label>E-Mail</label><input type="email" name="email" placeholder="ihre@email.de" required></div>
             <div class="field"><label>Betreff</label><input type="text" name="betreff" placeholder="z.&thinsp;B. Hochzeitstorte, Partybrezel &hellip;"></div>
@@ -560,7 +562,7 @@
       <p>Diese Website wird bei Netlify, Inc., 44 Montgomery Street, Suite 300, San Francisco, CA 94104, USA, gehostet. Beim Aufruf werden technisch notwendig Daten in Server-Logfiles verarbeitet, insbesondere IP-Adresse, Datum und Uhrzeit, aufgerufene Seite, Browsertyp und Betriebssystem. Sie werden nur zur Auslieferung und Absicherung der Website genutzt. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einem sicheren, stabilen Betrieb). Da Netlify in den USA ansässig ist, kann es dabei zu einer Datenübermittlung in ein Drittland kommen; Netlify verpflichtet sich vertraglich zur Einhaltung der EU-Standardvertragsklauseln (Art. 46 DSGVO) und bietet einen Auftragsverarbeitungsvertrag nach Art. 28 DSGVO an.</p>
       <h3>3. Kontaktaufnahme</h3>
       <p>Wenn Sie uns per E-Mail, Telefon oder über das Kontaktformular schreiben, verarbeiten wir Ihre Angaben (z. B. Name, E-Mail-Adresse, Nachricht) ausschließlich zur Bearbeitung Ihrer Anfrage. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO, sofern es um einen Vertrag oder vorvertragliche Maßnahmen (etwa eine Bestellung) geht, sonst Art. 6 Abs. 1 lit. f DSGVO. Wir löschen die Daten, sobald die Anfrage erledigt ist und keine gesetzlichen Aufbewahrungspflichten entgegenstehen.</p>
-      <p>Das Kontaktformular wird technisch über den Dienst FormSubmit (FormSubmit, Betreiber ansässig außerhalb der EU) abgewickelt, der Ihre Eingaben lediglich per E-Mail an uns weiterleitet und selbst nicht dauerhaft speichert. Es kann dabei zu einer kurzzeitigen Datenübermittlung in ein Drittland kommen.</p>
+      <p>Das Kontaktformular wird technisch über die Formularfunktion unseres Hosting-Anbieters Netlify verarbeitet, der Ihre Eingaben speichert und an uns weiterleitet. Es gelten dieselben Hinweise zur Auftragsverarbeitung und Drittlandübermittlung wie oben unter "Hosting" beschrieben.</p>
       <h3>4. Cookies und Tracking</h3>
       <p>Diese Website setzt keine Cookies zu Analyse- oder Werbezwecken ein und nutzt keine Tracking-Dienste.</p>
       <h3>5. Ihre Rechte</h3>
@@ -683,14 +685,16 @@
     e.preventDefault();
     var form = e.target;
     var data = new FormData(form);
+    var params = new URLSearchParams();
+    data.forEach(function(value, key){ params.append(key, value); });
     var btn = form.querySelector('button[type="submit"]');
     var originalText = btn.textContent;
     btn.disabled = true;
     btn.textContent = 'Wird gesendet …';
-    fetch('https://formsubmit.co/ajax/info@baeckerei-finck.de', {
+    fetch('/', {
       method: 'POST',
-      headers: { 'Accept': 'application/json' },
-      body: data
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: params.toString()
     }).then(function(res){
       if (!res.ok) throw new Error('send failed');
       form.reset();
